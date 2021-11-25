@@ -18,11 +18,11 @@ const StackNavigation = () => {
       screenOptions={{
         headerShown: false,
         cardStyle: {
-          backgroundColor: 'white'
+          // backgroundColor: 'white'
         }
       }}
     >
-      <Stack.Screen name="HomeScreen" component={ HomeScreen } />
+      <Stack.Screen name="HomeScreen"  options={{ cardStyle: { backgroundColor: 'white' }}} component={ HomeScreen } />
       <Stack.Screen name="DetailScreen" component={ DetailScreen } />
     </Stack.Navigator>
   );

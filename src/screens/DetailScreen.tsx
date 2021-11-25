@@ -1,9 +1,11 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
-import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import MovieDetails from '../components/MovieDetails';
+import useMovieDetails from '../hooks/useMovieDetails';
 import { RootStackParams } from '../navigation/StackNavigation';
 
 
@@ -11,11 +13,13 @@ const { height } = Dimensions.get('screen');
 
 interface Props extends StackScreenProps<RootStackParams, 'DetailScreen'>{};
 
-const DetailScreen = ({ route }: Props) => {
+const DetailScreen = ({ route, navigation }: Props) => {
 
     const movie = route.params;
     const uri = `https://image.tmdb.org/t/p/w500${ movie.poster_path }`;
 
+    const { isLoading, movieFull, cast } = useMovieDetails( movie.id );
+    
     return (
         <ScrollView>
             <View style={ styles.imageContainer }>
@@ -32,9 +36,21 @@ const DetailScreen = ({ route }: Props) => {
                 <Text style={ styles.title }>{ movie.title }</Text>
             </View>
 
-            <View style={ styles.marginContainer }>
-                <Icon name="star-outline"  size={20} color='grey' />
-            </View>
+            { isLoading 
+                ? <ActivityIndicator size={ 35 } color="grey" style={{ marginTop: 20 }}/> 
+                : <MovieDetails movieFull={ movieFull! } cast={ cast } />
+            }
+
+            <TouchableOpacity 
+                style={ styles.backButton }
+                onPress={() => navigation.goBack() }
+            >
+                <Icon 
+                    name="arrow-back-outline" 
+                    size={ 60 } 
+                    color='white' 
+                />
+            </TouchableOpacity>
         </ScrollView>
     )
 }
@@ -42,7 +58,6 @@ const DetailScreen = ({ route }: Props) => {
 const styles = StyleSheet.create({
     imageContainer: {
         width: '100%',
-        // backgroundColor: 'red',
         height: height * 0.7,
         shadowColor: "#000",
         shadowOffset: {
@@ -78,6 +93,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: '#000',
+    },
+    backButton: {
+        position: 'absolute',
+        zIndex: 999,
+        elevation: 9,
+        top: 30,
+        left: 5,
     }
 });
 
